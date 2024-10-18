@@ -4,7 +4,6 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 const router = express.Router();
 
-// Register
 router.post("/register", async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -19,7 +18,6 @@ router.post("/register", async (req, res) => {
   }
 });
 
-// Login
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -38,7 +36,6 @@ router.post("/login", async (req, res) => {
   }
 });
 
-// Protected Route (example)
 router.get("/profile", authenticateToken, async (req, res) => {
   const user = await User.findById(req.user.userId);
   res.json(user);
