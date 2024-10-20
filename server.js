@@ -23,5 +23,5 @@ app.get("/", (req, res) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/product", productRoutes);
 app.listen(3601, () => {
-  console.log(`Server is running on port ${3600}`);
+  console.log(`Server is running on port ${3601}`);
 });

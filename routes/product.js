@@ -1,69 +1,61 @@
 const express = require("express");
-const Product = require("../models/Product");
+const Product = require("../models/Product"); // Import Product model
 const router = express.Router();
 
-/**
- * @swagger
- * components:
- *   schemas:
- *     Product:
- *       type: object
- *       properties:
- *         productname:
- *           type: string
- *           description: The name of the product
- *         productcolor:
- *           type: string
- *           description: The color of the product
- *         productdescription:
- *           type: string
- *           description: A description of the product
- *       required:
- *         - productname
- *         - productcolor
- *         - productdescription
- */
-
-/**
- * @swagger
- * /api/product/createproduct:
- *   post:
- *     summary: Create a new product
- *     tags: [Products]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/Product'
- *     responses:
- *       201:
- *         description: Product created successfully
- *       400:
- *         description: All fields are required
- *       500:
- *         description: Server error
- */
 router.post("/createproduct", async (req, res) => {
-  try {
-    const { productname, productcolor, productdescription } = req.body;
+  console.log("Request Body:", req.body); // Log request body for debugging
 
-    // Basic validation
-    if (!productname || !productcolor || !productdescription) {
+  try {
+    // Destructure fields from the request body
+    const {
+      productName,
+      productColor,
+      productDescription,
+      productPrice,
+      productListeigyear,
+      specialFeature,
+    } = req.body;
+
+    // Validate required fields
+    if (!productName || !productColor || !productDescription) {
       return res.status(400).json({ message: "All fields are required." });
     }
 
-    const product = new Product({
-      productname,
-      productcolor,
-      productdescription,
+    if (productName.trim() === "") {
+      return res.status(400).json({ message: "Product name cannot be empty." });
+    }
+
+    // Check if a product with the same name already exists
+    const existingProduct = await Product.findOne({ productName });
+    if (existingProduct) {
+      return res
+        .status(400)
+        .json({ error: "Product with this name already exists." });
+    }
+
+    // Create a new product using the `create()` method
+    const pp = new Product({
+      productName,
+      productColor,
+      productDescription,
+      productPrice,
+      productListeigyear,
+      specialFeature,
     });
-
-    await product.save();
-
-    res.status(201).json({ message: "Product created successfully." });
+    await pp.save();
+    // Respond with success
+    res.status(201).json({
+      message: "Product created successfully.",
+      pp,
+    });
   } catch (error) {
-    res.status(500).json({ error: error.message || "Server error." });
+    // Handle duplicate key error (code 11000)
+    if (error.code === 11000) {
+      res.status(400).json({ error: "Duplicate product name detected." });
+    } else {
+      // Handle other errors
+      res.status(500).json({ error: error.message || "Server error." });
+    }
   }
 });
 

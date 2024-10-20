@@ -36,7 +36,7 @@ router.post("/login", async (req, res) => {
   }
 });
 
-router.get("/profile", authenticateToken, async (req, res) => {
+router.get("/profile", async (req, res) => {
   const user = await User.findById(req.user.userId);
   res.json(user);
 });
