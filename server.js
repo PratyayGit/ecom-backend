@@ -1,27 +1,35 @@
 const express = require("express");
-const mongoose = require("mongoose");
+
 const dotenv = require("dotenv");
 const setupSwagger = require("./swagger");
-const authRoutes = require("./routes/auth");
-const productRoutes = require("./routes/product");
+const { authRoutes } = require("./routes/auth.route.js");
+const productRoutes = require("./routes/product.route.js");
+const connectDb = require("./config/db.js");
 dotenv.config();
 
 const app = express();
 app.use(express.json());
 
-// Connect to MongoDB
-mongoose
-  .connect(process.env.MONGO_URL)
-  .then(() => console.log("Connected to MongoDB"))
-  .catch((error) => console.error("MongoDB connection failed:", error));
-setupSwagger(app);
-// Define a simple route
-app.get("/", (req, res) => {
-  res.send("API is running...");
+// health api
+app.get("/health", (req, res) => {
+  try {
+    res.json({
+      service: "server is running",
+      status: "Active",
+      time: new Date(),
+    });
+  } catch (error) {
+    console.log(error);
+  }
 });
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/product", productRoutes);
+app.use((req, res, next) => {
+  next();
+  console.log("hit here");
+});
+connectDb();
 app.listen(3601, () => {
   console.log(`Server is running on port ${3601}`);
 });
