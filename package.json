@@ -1,9 +1,11 @@
 {
   "name": "buysphere",
   "version": "1.0.0",
-  "description": "This is a showcase project under devlopment",
+  "description": "This is a showcase project under development",
   "main": "server.js",
   "scripts": {
+    "start": "node server.js",
+    "debug": "nodemon --inspect server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",

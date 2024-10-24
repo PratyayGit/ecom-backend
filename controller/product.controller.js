@@ -1,4 +1,5 @@
 const Product = require("../models/Product.model");
+
 const createproduct = async (req, res) => {
   try {
     // Destructure fields from the request body
@@ -52,6 +53,42 @@ const createproduct = async (req, res) => {
     }
   }
 };
+const updateProductByName = async (req, res) => {
+  try {
+    const { productName } = req.query;
+    // const { productName } = { productName: "test1" }; // Hardcoded for testing
+
+    const updates = req.body;
+    console.log("Query Parameter", productName);
+    console.log("Requested URL:", req.originalUrl);
+    const updatedProduct = await Product.findOneAndUpdate(
+      { productName },
+      updates,
+      { new: true, runValidators: true }
+    );
+    console.log("Update product", updatedProduct);
+    if (!updatedProduct) {
+      return res.status(404).json({ error: "Product not found." });
+    }
+
+    res.status(200).json({
+      message: "Product updated successfully.",
+      product: updatedProduct,
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message || "Server error." });
+  }
+};
+const getAllProducts = async (req, res) => {
+  try {
+    const products = await Product.find(); // Retrieve all products from the database
+    res.status(200).json(products); // Send the products as a JSON response
+  } catch (error) {
+    res.status(500).json({ error: error.message || "Server error." }); // Handle any errors
+  }
+};
 module.exports = {
   createproduct,
+  updateProductByName,
+  getAllProducts,
 };
