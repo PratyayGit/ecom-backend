@@ -79,6 +79,27 @@ const updateProductByName = async (req, res) => {
     res.status(500).json({ error: error.message || "Server error." });
   }
 };
+const deleteProductByName = async (req, res) => {
+  try {
+    const { productName } = req.query; // Extract the product name from the query parameter
+
+    console.log("Query Parameter", productName); // Log the product name
+
+    // Check if the product exists and delete it
+    const deletedProduct = await Product.findOneAndDelete({ productName });
+
+    if (!deletedProduct) {
+      return res.status(404).json({ error: "Product not found." }); // If no product found
+    }
+
+    res.status(200).json({
+      message: "Product deleted successfully.",
+      product: deletedProduct,
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message || "Server error." });
+  }
+};
 const getAllProducts = async (req, res) => {
   try {
     const products = await Product.find(); // Retrieve all products from the database
@@ -91,4 +112,5 @@ module.exports = {
   createproduct,
   updateProductByName,
   getAllProducts,
+  deleteProductByName,
 };
