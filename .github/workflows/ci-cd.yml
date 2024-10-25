@@ -1,0 +1,36 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main # Change this to your default branch if different
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build Docker image
+        run: |
+          docker build -t your-docker-image-name:latest .
+
+      - name: Log in to Render
+        run: |
+          curl -sSL https://cli.render.com/install.sh | bash
+          render login --apiKey ${{ secrets.RENDER_API_KEY }}
+
+      - name: Push Docker image to Render
+        run: |
+          render deploy your-service-name --docker-image your-docker-image-name:latest

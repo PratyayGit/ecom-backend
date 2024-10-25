@@ -71,7 +71,7 @@ const updateProductByName = async (req, res) => {
       updates,
       { new: true, runValidators: true }
     );
-    console.log("Update product", updatedProduct);
+
     if (!updatedProduct) {
       return res.status(404).json({ error: "Product not found." });
     }
