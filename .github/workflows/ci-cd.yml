@@ -29,7 +29,8 @@ jobs:
       - name: Log in to Render
         run: |
           curl -sSL https://cli.render.com/install.sh | bash
-          render login --apiKey ${{ secrets.RENDER_API_KEY }}
+          render login --apiKey ${{ secrets.RENDER_API_KEY }}  # Your Render API key
+          render deploy your-service-name --docker-image your-docker-image-name:latest
 
       - name: Push Docker image to Render
         run: |
