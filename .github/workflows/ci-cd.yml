@@ -1,9 +1,9 @@
-name: CI/CD Pipeline
+name: CI/CD to Docker Hub and Render
 
 on:
   push:
     branches:
-      - main # Change this to your default branch if different
+      - main  # Adjust to your main branch name
 
 jobs:
   build-and-deploy:
@@ -19,25 +19,22 @@ jobs:
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
         with:
-          username: ${{ secrets.DOCKER_HUB_USERNAME }}  # Use GitHub secrets
-          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}  # Use GitHub secrets
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
-      - name: Build Docker image
-        run: |
-          docker build -t pratyay44/your-docker-image-name:latest .
+      - name: Extract short SHA
+        id: vars
+        run: echo "GIT_SHA=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
 
-      - name: Push Docker image to Docker Hub
+      - name: Build and push Docker image
         run: |
-          docker push pratyay44/your-docker-image-name:latest
-
-      - name: Install Render CLI
-        run: |
-          curl -sSL https://cli.render.com/install.sh | bash
-
-      - name: Log in to Render
-        run: |
-          render login --apiKey ${{ secrets.RENDER_API_KEY }}
+          docker build -t edge007/qrcodewaiter:${{ env.GIT_SHA }} .
+          docker push edge007/qrcodewaiter:${{ env.GIT_SHA }}
 
       - name: Deploy to Render
         run: |
-          render deploy your-service-name --docker-image pratyay44/your-docker-image-name:latest
+          curl -X POST -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+               -d '{"image":"edge007/qrcodewaiter:${{ env.GIT_SHA }}"}' \
+               https://api.render.com/v1/services/your-render-service-id/deploys
+        env:
+          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
