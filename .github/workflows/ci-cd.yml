@@ -14,21 +14,21 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
+        uses: docker/setup-buildx-action@v2
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
         with:
-          username: pratyay44
-          password: dckr_pat_D0WibgSF6YZknMz3oc0dyeUbdiQ
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}  # Use GitHub secrets
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}  # Use GitHub secrets
 
       - name: Build Docker image
         run: |
-          docker build -t your-docker-image-name:latest .
+          docker build -t pratyay44/your-docker-image-name:latest .
 
       - name: Push Docker image to Docker Hub
         run: |
-          docker push your-docker-image-name:latest
+          docker push pratyay44/your-docker-image-name:latest
 
       - name: Install Render CLI
         run: |
@@ -40,4 +40,4 @@ jobs:
 
       - name: Deploy to Render
         run: |
-          render deploy your-service-name --docker-image your-docker-image-name:latest
+          render deploy your-service-name --docker-image pratyay44/your-docker-image-name:latest
