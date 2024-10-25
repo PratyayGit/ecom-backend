@@ -13,6 +13,16 @@ RUN npm install
 # Copy the rest of your application files.
 COPY . .
 
+# Set environment variables
+ARG MONGO_URL
+ARG PORT
+ARG JWT_SECRET
+
+# Make the environment variables available to the application
+ENV MONGO_URL=${MONGO_URL}
+ENV PORT=${PORT}
+ENV JWT_SECRET=${JWT_SECRET}
+
 # Expose the port your app runs on.
 EXPOSE 3600
 
