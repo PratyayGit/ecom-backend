@@ -116,7 +116,7 @@ const getAllProducts = async (req, res) => {
       products,
     });
   } catch (error) {
-    res.status(500).json({ error: error.message || "Server error." });
+    res.status(500).json({ error: error.message || "Server error try again." });
   }
 };
 module.exports = {
