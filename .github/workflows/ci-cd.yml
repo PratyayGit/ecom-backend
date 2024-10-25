@@ -25,14 +25,14 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t pratyay44/qrcodewaiter:${{ env.GIT_SHA }} .
+          docker build -t pratyay44/ecom:${{ env.GIT_SHA }} .
 
       - name: Push Docker image to Docker Hub
         run: |
-          docker push pratyay44/qrcodewaiter:${{ env.GIT_SHA }}
+          docker push pratyay44/ecom:${{ env.GIT_SHA }}
 
       - name: Deploy to Render
         run: |
           curl -X POST -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
-          -d '{"serviceId": "your-render-service-id", "dockerImage": "pratyay44/qrcodewaiter:${{ env.GIT_SHA }}"}' \
+          -d '{"serviceId": "your-render-service-id", "dockerImage": "ecom/qrcodewaiter:${{ env.GIT_SHA }}"}' \
           https://api.render.com/v1/services/deploys
