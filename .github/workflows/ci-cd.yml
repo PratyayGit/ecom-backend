@@ -3,7 +3,7 @@ name: CI/CD Pipeline
 on:
   push:
     branches:
-      - main # Change this to your default branch if different
+      - main  # Change this to your default branch if different
 
 jobs:
   build-and-push:
@@ -26,12 +26,13 @@ jobs:
         run: |
           docker build -t your-docker-image-name:latest .
 
-      - name: Log in to Render
+      - name: Push Docker image to Docker Hub
         run: |
-          curl -sSL https://cli.render.com/install.sh | bash
-          render login --apiKey ${{ secrets.RENDER_API_KEY }}  # Your Render API key
-          render deploy your-service-name --docker-image your-docker-image-name:latest
+          docker push your-docker-image-name:latest
 
-      - name: Push Docker image to Render
+      - name: Deploy to Render
         run: |
-          render deploy your-service-name --docker-image your-docker-image-name:latest
+          curl -X POST -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+               -H "Content-Type: application/json" \
+               -d '{"image":"your-docker-image-name:latest"}' \
+               https://api.render.com/v1/services/your-render-service-id/deploys
