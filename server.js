@@ -1,18 +1,36 @@
 const express = require("express");
-
+const jwt = require("./middlewere/jwtVerify.js");
 const dotenv = require("dotenv");
 const setupSwagger = require("./swagger");
+const bodyParser = require("body-parser");
 const { authRoutes } = require("./routes/auth.route.js");
 const { productRoutes } = require("./routes/product.route.js");
 const connectDb = require("./config/db.js");
 dotenv.config();
 
 const app = express();
-app.use(express.json());
+app.use(
+  express.json({
+    verify: (req, res, buf) => {
+      try {
+        JSON.parse(buf);
+      } catch (err) {
+        console.error("Invalid JSON format:", err.message);
+        throw new SyntaxError("Invalid JSON format"); // Handle this in a catch
+      }
+    },
+  })
+);
+
+app.use(bodyParser.json());
+// Centralized error handling middleware
 app.use((req, res, next) => {
-  console.log("Query Parameters:", req.query);
+  req.on("data", (chunk) => {
+    console.log("Incoming JSON payload chunk:", chunk.toString());
+  });
   next();
 });
+
 // health api
 app.get("/health", (req, res) => {
   try {

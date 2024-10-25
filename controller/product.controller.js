@@ -37,6 +37,7 @@ const createproduct = async (req, res) => {
       productPrice,
       productListeigyear,
       specialFeature,
+      userId: req.user.userId,
     });
     await newProduct.save();
     // Respond with success
@@ -55,12 +56,16 @@ const createproduct = async (req, res) => {
 };
 const updateProductByName = async (req, res) => {
   try {
+    if (product.userId.toString() !== req.user.userId) {
+      return res
+        .status(403)
+        .json({ message: "You are not authorized to update this product." });
+    }
     const { productName } = req.query;
     // const { productName } = { productName: "test1" }; // Hardcoded for testing
 
     const updates = req.body;
-    console.log("Query Parameter", productName);
-    console.log("Requested URL:", req.originalUrl);
+
     const updatedProduct = await Product.findOneAndUpdate(
       { productName },
       updates,
@@ -81,15 +86,17 @@ const updateProductByName = async (req, res) => {
 };
 const deleteProductByName = async (req, res) => {
   try {
-    const { productName } = req.query; // Extract the product name from the query parameter
+    if (product.userId.toString() !== req.user.userId) {
+      return res
+        .status(403)
+        .json({ message: "You are not authorized to delete this product." });
+    }
+    const { productName } = req.query;
 
-    console.log("Query Parameter", productName); // Log the product name
-
-    // Check if the product exists and delete it
     const deletedProduct = await Product.findOneAndDelete({ productName });
 
     if (!deletedProduct) {
-      return res.status(404).json({ error: "Product not found." }); // If no product found
+      return res.status(404).json({ error: "Product not found." });
     }
 
     res.status(200).json({
@@ -102,10 +109,14 @@ const deleteProductByName = async (req, res) => {
 };
 const getAllProducts = async (req, res) => {
   try {
-    const products = await Product.find(); // Retrieve all products from the database
-    res.status(200).json(products); // Send the products as a JSON response
+    const username = req.user.username;
+    const products = await Product.find({ userId: req.user.userId });
+    res.status(200).json({
+      username,
+      products,
+    });
   } catch (error) {
-    res.status(500).json({ error: error.message || "Server error." }); // Handle any errors
+    res.status(500).json({ error: error.message || "Server error." });
   }
 };
 module.exports = {

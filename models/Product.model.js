@@ -6,5 +6,6 @@ const productSchema = new mongoose.Schema({
   productPrice: { type: Number },
   productListeigyear: { type: Number },
   specialFeature: { type: String },
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
 });
 module.exports = mongoose.model("Product", productSchema);

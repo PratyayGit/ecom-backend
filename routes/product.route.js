@@ -6,10 +6,10 @@ const {
   getAllProducts,
   deleteProductByName,
 } = require("../controller/product.controller");
-
-router.post("/createproduct", createproduct);
-router.put("/updateProductbyname", updateProductByName);
-router.delete("/deleteProductByName", deleteProductByName);
-router.get("/getallproduct", getAllProducts);
+const jwt = require("../middlewere/jwtVerify");
+router.post("/createproduct", jwt, createproduct);
+router.put("/updateProductbyname", jwt, updateProductByName);
+router.delete("/deleteProductByName", jwt, deleteProductByName);
+router.get("/getallproduct", jwt, getAllProducts);
 
 module.exports = { productRoutes: router };

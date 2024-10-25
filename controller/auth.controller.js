@@ -7,7 +7,6 @@ const register = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const user = new User({ email, password: hashedPassword });
-    console.log("first");
     await user.save();
 
     res.status(201).json({ message: "User registered successfully" });
@@ -39,17 +38,6 @@ const profile = async (req, res) => {
   res.json(user);
 };
 
-// Middleware to verify JWT
-// function authenticateToken(req, res, next) {
-//   const token = req.header("Authorization")?.split(" ")[1];
-//   if (!token) return res.status(401).json({ error: "Access denied" });
-
-//   jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-//     if (err) return res.status(403).json({ error: "Invalid token" });
-//     req.user = user;
-//     next();
-//   });
-// }
 module.exports = {
   register,
   login,
