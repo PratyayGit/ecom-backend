@@ -3,10 +3,10 @@ name: CI/CD Pipeline
 on:
   push:
     branches:
-      - main # Change this to your default branch if different
+      - main  # Adjust this to your main branch name
 
 jobs:
-  build-and-push:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
@@ -17,22 +17,32 @@ jobs:
         uses: docker/setup-buildx-action@v1
 
       - name: Log in to Docker Hub
-        uses: docker/login-action@v1
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "pratyay44" --password-stdin
+
+      - name: Extract short SHA
+        id: vars
+        run: echo "GIT_SHA=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
 
       - name: Build Docker image
         run: |
-          docker build -t your-docker-image-name:latest .
+          docker build -t pratyay44/ecom:${{ env.GIT_SHA }} .
 
       - name: Push Docker image to Docker Hub
         run: |
+<<<<<<< HEAD
           docker push your-docker-image-name:latest
+=======
+          docker push pratyay44/ecom:${{ env.GIT_SHA }}
+>>>>>>> 6265b6862e914740fb1c019ed7fdc160a16e7132
 
       - name: Deploy to Render
         run: |
           curl -X POST -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+<<<<<<< HEAD
                -H "Content-Type: application/json" \
                -d '{"image":"your-docker-image-name:latest"}' \
                https://api.render.com/v1/services/your-render-service-id/deploys
+=======
+          -d '{"serviceId": "your-render-service-id", "dockerImage": "ecom/qrcodewaiter:${{ env.GIT_SHA }}"}' \
+          https://api.render.com/v1/services/deploys
+>>>>>>> 6265b6862e914740fb1c019ed7fdc160a16e7132
