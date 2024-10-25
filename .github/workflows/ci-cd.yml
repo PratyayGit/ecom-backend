@@ -3,7 +3,7 @@ name: CI/CD Pipeline
 on:
   push:
     branches:
-      - main  # Adjust this to your main branch name
+      - main # Adjust this to your main branch name
 
 jobs:
   build-and-deploy:
@@ -29,20 +29,10 @@ jobs:
 
       - name: Push Docker image to Docker Hub
         run: |
-<<<<<<< HEAD
-          docker push your-docker-image-name:latest
-=======
           docker push pratyay44/ecom:${{ env.GIT_SHA }}
->>>>>>> 6265b6862e914740fb1c019ed7fdc160a16e7132
 
       - name: Deploy to Render
         run: |
           curl -X POST -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
-<<<<<<< HEAD
-               -H "Content-Type: application/json" \
-               -d '{"image":"your-docker-image-name:latest"}' \
-               https://api.render.com/v1/services/your-render-service-id/deploys
-=======
           -d '{"serviceId": "your-render-service-id", "dockerImage": "ecom/qrcodewaiter:${{ env.GIT_SHA }}"}' \
           https://api.render.com/v1/services/deploys
->>>>>>> 6265b6862e914740fb1c019ed7fdc160a16e7132
