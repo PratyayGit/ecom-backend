@@ -72,7 +72,7 @@ app.use("/api/product", productRoutes);
 app.use("/api/resetpass", userpasswordreset);
 connectDb();
 
-app.listen(3601, () => {
+app.listen(process.env.PORT, () => {
   console.log(`Server is running on port ${3601}`);
   logger.info("Server started on http://localhost:3601");
 });
