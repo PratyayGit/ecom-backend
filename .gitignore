@@ -6,7 +6,8 @@ npm-debug.log*
 logs/
 
 # Environment variables
-.env/
+.env
+
 
 # Docker files
 Dockerfile.dockerignore
