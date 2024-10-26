@@ -7,7 +7,6 @@ const { authRoutes } = require("./routes/auth.route.js");
 const { productRoutes } = require("./routes/product.route.js");
 const connectDb = require("./config/db.js");
 dotenv.config();
-
 const app = express();
 app.use(
   express.json({

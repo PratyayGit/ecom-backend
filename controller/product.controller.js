@@ -119,9 +119,52 @@ const getAllProducts = async (req, res) => {
     res.status(500).json({ error: error.message || "Server error try again." });
   }
 };
+
+const productFilter = async (req, res) => {
+  try {
+    const {
+      productName,
+      productColor,
+      productDescription,
+      specialFeature,
+      userId,
+      minPrice,
+      maxPrice,
+      productListingYear,
+    } = req.query;
+
+    // Initialize filter object
+    const filter = {};
+
+    // Dynamically add filter properties if they exist in the query
+    if (productName) filter.productName = productName;
+    if (productColor) filter.productColor = productColor;
+    if (productDescription) filter.productDescription = productDescription;
+    if (specialFeature) filter.specialFeature = specialFeature;
+    if (userId) filter.userId = userId;
+
+    // Add price range filtering
+    if (minPrice || maxPrice) {
+      filter.productPrice = {};
+      if (minPrice) filter.productPrice.$gte = Number(minPrice);
+      if (maxPrice) filter.productPrice.$lte = Number(maxPrice);
+    }
+
+    // Add listing year filtering
+    if (productListingYear)
+      filter.productListeigyear = Number(productListingYear);
+
+    // Fetch products based on the filter
+    const products = await Product.find(filter);
+    res.json(products);
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error });
+  }
+};
 module.exports = {
   createproduct,
   updateProductByName,
   getAllProducts,
   deleteProductByName,
+  productFilter,
 };
