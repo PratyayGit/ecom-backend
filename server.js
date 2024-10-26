@@ -2,6 +2,7 @@ const express = require("express");
 const logger = require("./logger"); // Import logger
 const jwt = require("./middlewere/jwtVerify.js");
 const dotenv = require("dotenv");
+const path = require("path");
 const setupSwagger = require("./swagger");
 const bodyParser = require("body-parser");
 const { authRoutes } = require("./routes/auth.route.js");
@@ -22,8 +23,18 @@ app.get("/error", (req, res) => {
 });
 app.use((err, req, res, next) => {
   // Log any errors that reach this middleware
+  logger.info(`Incoming request: ${req.method} ${req.url}`);
   logger.error(`Express error: ${err.message}`);
   res.status(500).send("Server Error");
+});
+app.get("/download-logs", (req, res) => {
+  const logFilePath = path.join(__dirname, "logs", "app.log"); // Using path to construct file path
+  res.download(logFilePath, "app.log", (err) => {
+    if (err) {
+      logger.error("Error sending log file:", err);
+      res.status(500).send("Error downloading log file");
+    }
+  });
 });
 
 app.use(bodyParser.json());
