@@ -1,27 +1,22 @@
-// logger.js
-const { createLogger, format, transports } = require("winston");
-const { combine, timestamp, printf, colorize } = format;
+const fs = require("fs");
+const path = require("path");
+const winston = require("winston");
 
-// Define custom log format
-const customFormat = printf(({ level, message, timestamp }) => {
-  return `${timestamp} [${level}]: ${message}`;
-});
+// Create a log directory if it doesn't exist
+const logDir = path.join(__dirname, "logs");
+if (!fs.existsSync(logDir)) {
+  fs.mkdirSync(logDir);
+}
 
-const logger = createLogger({
-  level: "info", // Log levels: error, warn, info, http, verbose, debug, silly
-  format: combine(
-    timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
-    colorize(), // Add color for console
-    customFormat
+const logger = winston.createLogger({
+  level: "info",
+  format: winston.format.combine(
+    winston.format.timestamp(),
+    winston.format.json()
   ),
   transports: [
-    new transports.Console(), // Log to console
-    new transports.File({ filename: "logs/app.log", level: "info" }), // Log to file
+    new winston.transports.File({ filename: path.join(logDir, "app.log") }),
   ],
-  exceptionHandlers: [
-    new transports.File({ filename: "logs/exceptions.log" }), // Log uncaught exceptions
-  ],
-  exitOnError: false, // Prevent exit on handled exceptions
 });
 
 module.exports = logger;

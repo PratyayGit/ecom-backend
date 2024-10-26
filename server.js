@@ -2,6 +2,7 @@ const express = require("express");
 const logger = require("./logger"); // Import logger
 const jwt = require("./middlewere/jwtVerify.js");
 const dotenv = require("dotenv");
+const morgan = require("morgan");
 const path = require("path");
 const setupSwagger = require("./swagger");
 const bodyParser = require("body-parser");
@@ -12,6 +13,13 @@ const connectDb = require("./config/db.js");
 
 dotenv.config();
 const app = express();
+app.use(
+  morgan("combined", {
+    stream: {
+      write: (message) => logger.info(message.trim()), // Log to your logger
+    },
+  })
+);
 app.get("/", (req, res) => {
   logger.info("Home route accessed");
   res.send("Welcome to the Home page!");
