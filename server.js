@@ -1,25 +1,30 @@
 const express = require("express");
+const logger = require("./logger"); // Import logger
 const jwt = require("./middlewere/jwtVerify.js");
 const dotenv = require("dotenv");
 const setupSwagger = require("./swagger");
 const bodyParser = require("body-parser");
 const { authRoutes } = require("./routes/auth.route.js");
 const { productRoutes } = require("./routes/product.route.js");
+const { userpasswordreset } = require("./routes/forgetpass.route.js");
 const connectDb = require("./config/db.js");
+
 dotenv.config();
 const app = express();
-app.use(
-  express.json({
-    verify: (req, res, buf) => {
-      try {
-        JSON.parse(buf);
-      } catch (err) {
-        console.error("Invalid JSON format:", err.message);
-        throw new SyntaxError("Invalid JSON format"); // Handle this in a catch
-      }
-    },
-  })
-);
+app.get("/", (req, res) => {
+  logger.info("Home route accessed");
+  res.send("Welcome to the Home page!");
+});
+
+app.get("/error", (req, res) => {
+  logger.error("Error route accessed - something went wrong");
+  res.status(500).send("An error occurred");
+});
+app.use((err, req, res, next) => {
+  // Log any errors that reach this middleware
+  logger.error(`Express error: ${err.message}`);
+  res.status(500).send("Server Error");
+});
 
 app.use(bodyParser.json());
 // Centralized error handling middleware
@@ -45,8 +50,10 @@ app.get("/health", (req, res) => {
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/product", productRoutes);
-
+app.use("/api/resetpass", userpasswordreset);
 connectDb();
+
 app.listen(3601, () => {
   console.log(`Server is running on port ${3601}`);
+  logger.info("Server started on http://localhost:3601");
 });

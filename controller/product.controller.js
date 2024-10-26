@@ -1,5 +1,5 @@
 const Product = require("../models/Product.model");
-
+const User = require("../models/User.model");
 const createproduct = async (req, res) => {
   try {
     // Destructure fields from the request body
@@ -109,10 +109,11 @@ const deleteProductByName = async (req, res) => {
 };
 const getAllProducts = async (req, res) => {
   try {
-    const username = req.user.username;
+    const user = await User.findById(req.user.userId).select("email");
+
     const products = await Product.find({ userId: req.user.userId });
     res.status(200).json({
-      username,
+      user,
       products,
     });
   } catch (error) {
