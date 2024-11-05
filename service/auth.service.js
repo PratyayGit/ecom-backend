@@ -1,9 +1,11 @@
 // services/userService.js
 const User = require("../models/User.model");
+const AdminModel = require("../models/Admin.model");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { sendWelcomeEmail } = require("../mailsend/emailService");
-
+const uploadImage = require("../service/imageUpload.service");
+// Register Section
 const register = async (email, password) => {
   const hashedPassword = await bcrypt.hash(password, 10);
   const user = new User({ email, password: hashedPassword });
@@ -11,7 +13,29 @@ const register = async (email, password) => {
   await sendWelcomeEmail(email.split("@")[0], email);
   return user;
 };
-
+const adminRegister = async (adminData) => {
+  const {
+    adminName,
+    adminPhoneNo,
+    adminEmail,
+    adminPassword,
+    adminProfilePicture,
+  } = adminData;
+  let convertedimage = null;
+  if (adminProfilePicture) {
+    convertedimage = uploadImage(adminProfilePicture);
+  }
+  const hashedPassword = await bcrypt.hash(adminPassword, 11);
+  const admin = new AdminModel({
+    adminName,
+    adminPhoneNo,
+    adminEmail,
+    adminPassword: hashedPassword,
+    adminProfilePicture: convertedimage,
+  });
+  await admin.save();
+  await sendWelcomeEmail(adminName, adminEmail);
+};
 const login = async (email, password) => {
   const user = await User.findOne({ email });
   if (!user || !(await bcrypt.compare(password, user.password))) {
@@ -45,6 +69,7 @@ const forgotPassword = async (email) => {
 
 module.exports = {
   register,
+  adminRegister,
   login,
   getProfile,
   forgotPassword,

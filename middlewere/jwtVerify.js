@@ -10,6 +10,11 @@ function authenticateToken(req, res, next) {
     if (err) {
       return res.status(403).json({ error: "Invalid token" });
     }
+    if (requiredRole && user.role !== requiredRole) {
+      return res
+        .status(403)
+        .json({ error: "Access denied: Insufficient permissions." });
+    }
     req.user = user;
     next();
   });

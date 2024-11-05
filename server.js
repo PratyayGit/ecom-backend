@@ -4,7 +4,6 @@ const jwt = require("./middlewere/jwtVerify.js");
 const dotenv = require("dotenv");
 const morgan = require("morgan");
 const path = require("path");
-const setupSwagger = require("./swagger");
 const bodyParser = require("body-parser");
 const { authRoutes } = require("./routes/auth.route.js");
 const { productRoutes } = require("./routes/product.route.js");

@@ -10,7 +10,21 @@ const register = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
-
+const adminRegister = async (req, res) => {
+  try {
+    const adminData = ({
+      adminName,
+      adminPhoneNo,
+      adminEmail,
+      adminPassword,
+      adminProfilePicture,
+    } = req.body);
+    await userService.adminRegister(adminData);
+    res.status(201).json({ message: "Admin registered successfully" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
 const login = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -47,4 +61,5 @@ module.exports = {
   login,
   profile,
   forgotPassword,
+  adminRegister,
 };
