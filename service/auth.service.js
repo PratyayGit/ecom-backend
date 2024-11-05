@@ -36,15 +36,41 @@ const adminRegister = async (adminData) => {
   await admin.save();
   await sendWelcomeEmail(adminName, adminEmail);
 };
-const login = async (email, password) => {
-  const user = await User.findOne({ email });
-  if (!user || !(await bcrypt.compare(password, user.password))) {
-    throw new Error("Invalid credentials");
+const login = async (email, password, role) => {
+  let user;
+
+  try {
+    if (role === "admin") {
+      user = await AdminModel.findOne({ adminEmail: email });
+    } else {
+      user = await User.findOne({ email });
+    }
+
+    // Check if user exists
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    // Check if the password is defined before comparing
+    const userPassword = user.adminPassword || user.password;
+    if (!userPassword) {
+      throw new Error("Password not found for the user");
+    }
+
+    const passwordMatch = await bcrypt.compare(password, userPassword);
+    if (!passwordMatch) {
+      throw new Error("Invalid credentials");
+    }
+
+    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "1h",
+    });
+
+    return { user, token };
+  } catch (error) {
+    console.error("Error in login function:", error);
+    throw error; // Re-throw the error to handle it in the calling function
   }
-  const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
-    expiresIn: "1h",
-  });
-  return { user, token };
 };
 
 const getProfile = async (userId) => {

@@ -1,7 +1,7 @@
 // services/productService.js
 const Product = require("../models/Product.model");
 const User = require("../models/User.model");
-
+const AdminModel = require("../models/Admin.model");
 const createProduct = async (data, userId) => {
   const {
     productName,

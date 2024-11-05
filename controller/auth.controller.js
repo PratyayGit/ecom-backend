@@ -27,8 +27,12 @@ const adminRegister = async (req, res) => {
 };
 const login = async (req, res) => {
   try {
-    const { email, password } = req.body;
-    const { token } = await userService.login(email, password);
+    const { email, password, role } = req.body;
+    const { token } = await userService.login(
+      email,
+      password,
+      role === "admin" ? role : "user"
+    );
     res.json({ token });
   } catch (error) {
     res.status(401).json({ error: error.message });
