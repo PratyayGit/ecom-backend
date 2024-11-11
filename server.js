@@ -3,6 +3,7 @@ const logger = require("./logger"); // Import logger
 const jwt = require("./middlewere/jwtVerify.js");
 const dotenv = require("dotenv");
 const morgan = require("morgan");
+const cookieparser = require("cookie-parser");
 const path = require("path");
 const bodyParser = require("body-parser");
 const { authRoutes } = require("./routes/auth.route.js");
@@ -19,6 +20,7 @@ app.use(
     },
   })
 );
+app.use(cookieparser());
 app.get("/", (req, res) => {
   logger.info("Home route accessed");
   res.send("Welcome to the Home page!");

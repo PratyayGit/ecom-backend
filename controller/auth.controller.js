@@ -33,7 +33,11 @@ const login = async (req, res) => {
       password,
       role === "admin" ? role : "user"
     );
-    res.json({ token });
+    res.cookie("authToken", token, {
+      httpOnly: true,
+      maxAge: 60 * 60 * 1000,
+    });
+    res.status(200).json({ message: "Login successful" });
   } catch (error) {
     res.status(401).json({ error: error.message });
   }
